@@ -90,7 +90,7 @@ remove_pkgs () {
   pkgs_to_remove=$*
   pkgs_to_remove_num="$#"
 
-  printf "\nPackages marked for removal: ${pkgs_to_remove_num} => ${pkgs_to_remove}\n"
+  printf "\nPackages marked for removal: ${pkgs_to_remove}\n"
 
   for host in $HOSTLIST; do
     printf "\nHOST ${host}:\n\n"
@@ -106,7 +106,7 @@ remove_dirs () {
   dirs_to_remove=$*
   dirs_to_remove_num="$#"
 
-  printf "\nDirectories marked for removal: ${dirs_to_remove_num} => ${dirs_to_remove}\n"
+  printf "\nDirectories marked for removal: ${dirs_to_remove}\n"
 
   for host in $HOSTLIST; do
     printf "\nHOST ${host}:\n\n"
@@ -118,16 +118,22 @@ remove_dirs () {
 }
 
 
+
+
 parse_args $*
 
 # echo ${dirs_to_remove}
 
+# Remove packages
 if [ $pkgs_to_remove ]; then
+  printf "\nStarting removal process for packages.\n"
   pkgs_to_remove=${pkgs_to_remove/,/ }
   remove_pkgs ${pkgs_to_remove}
 fi
 
+# Remove files
 if [ $dirs_to_remove ]; then
+  printf "\nStarting removal process for directores.\n"
   dirs_to_remove=${dirs_to_remove/,/ }
   remove_dirs ${dirs_to_remove}
 fi
