@@ -12,6 +12,35 @@
 SSH_REMOTE="/usr/bin/ssh -q -t"
 
 
+remove_objects () {
+
+  object_type="$1"
+  shift
+  OBJECTS=$*
+  OBJECTS_NUM="$#"
+
+  case $object_type in
+    packages)
+      object_description="packages"
+      command="sudo yum -y remove"
+      ;;
+    directories)
+      object_description="directories"
+      command="sudo rm -vfr"
+  esac
+
+  printf "\n${OBJECTS_NUM} ${object_description} marked for removal: ${OBJECTS}\n"
+
+  for host in $hosts; do
+    printf "\nAccessing host: ${host}\n\n"
+    for object in $OBJECTS; do
+      $SSH_REMOTE $host "${command} ${object}"
+    done
+  done
+
+}
+
+
 parse_args () {
 
   if [ $# -lt 2 ] ; then
@@ -65,34 +94,7 @@ exit
 }
 
 
-remove_objects () {
-
-  object_type="$1"
-  shift
-  OBJECTS=$*
-  OBJECTS_NUM="$#"
-
-  case $object_type in
-    packages)
-      object_description="packages"
-      command="sudo yum -y remove"
-      ;;
-    directories)
-      object_description="directories"
-      command="sudo rm -vfr"
-  esac
-
-  printf "\n${OBJECTS_NUM} ${object_description} marked for removal: ${OBJECTS}\n"
-
-  for host in $hosts; do
-    printf "\nAccessing host: ${host}\n\n"
-    for object in $OBJECTS; do
-      $SSH_REMOTE $host "${command} ${object}"
-    done
-  done
-
-}
-
+# Main Section #
 
 parse_args $*
 
