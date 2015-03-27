@@ -6,9 +6,6 @@
 #
 # https://github.com/Cornellio/snaphost
 
-# TODO
-# add check functions
-
 SSH_REMOTE="/usr/bin/ssh -q -t"
 
 
@@ -27,6 +24,7 @@ remove_objects () {
     directories)
       object_description="directories"
       command="sudo rm -vfr"
+      ;;
   esac
 
   printf "\n${OBJECTS_NUM} ${object_description} marked for removal: ${OBJECTS}\n"
@@ -41,7 +39,35 @@ remove_objects () {
 }
 
 
-parse_args () {
+run_commands () {
+
+  COMMANDS="$*"
+
+  printf "\nCommands marked for execution: \'${COMMANDS}\'\n"
+
+  for host in $hosts; do
+    printf "\nAccessing host: ${host}\n\n"
+    $SSH_REMOTE $host "${COMMANDS}"
+  done
+
+}
+
+
+parse_args_main () {
+
+  case $1 in
+    remove)
+      shift
+      parse_args_removal $*
+      ;;
+    *) usage
+      ;;
+  esac
+
+}
+
+
+parse_args_removal () {
 
   if [ $# -lt 2 ] ; then
     usage
@@ -69,7 +95,6 @@ parse_args () {
   shift
 }
 
-
 usage () {
   PROGNAME=$(basename $0)
   cat -<< EOF
@@ -77,17 +102,14 @@ usage () {
   $PROGNAME usage:
 
   Removal commands:
-  $PROGNAME remove -d [directories to remove,] -p [packages to remove,]
+  $PROGNAME remove -h [hosts,] -d [directories to remove,] -p [packages to remove,]
   Remove given packages and directories on each host. Use a comma separated list.
-
-  Check commands:
-  $PROGNAME check
-  Check status of services on each host
 
   Examples:
 
-  Remove Riak
-  snaphost.sh -p riak,erlang-rebar -d /etc/riak,/var/lib/riak -h ppriakops01-sc9
+  Remove Riak packages and files on ppriakops01-sc9 and ppriakops02-sc9:
+
+  snaphost.sh -h ppriakops01-sc9,ppriakops02-sc9 -p riak,erlang-rebar -d /etc/riak,/var/lib/riak
 
 EOF
 exit
@@ -96,16 +118,17 @@ exit
 
 # Main Section #
 
-parse_args $*
+parse_args_main $*
+
 
 printf "\nStarting removal process on ${hosts_num} hosts.\n"
 
-if [ $pkgs_to_remove ]; then
+if [ "${pkgs_to_remove}" ]; then
   pkgs_to_remove=${pkgs_to_remove/,/ }
   remove_objects packages $pkgs_to_remove
 fi
 
-if [ $dirs_to_remove ]; then
+if [ "${dirs_to_remove}" ]; then
   dirs_to_remove=${dirs_to_remove/,/ }
   remove_objects directories $dirs_to_remove
 fi
