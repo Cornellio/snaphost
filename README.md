@@ -1,6 +1,6 @@
 # Snaphost
 
-Snaphost is a bare bones script used for Puppet development in cases where reverting a system by removing packages and files is sufficient. I find it useful for quick, incremental development on systems where simply deleting files and removing packages is enough to bring it back to a reasonably clean state. It's not intended to replace true a true testing framework. For that, use rspec and Beaker.
+Snaphost is a bare bones script used for Puppet development in cases where reverting a system by removing packages and files is sufficient. I find it useful for quick, incremental development on systems where simply deleting files and removing packages is enough to bring it back to a reasonably clean state. It's not intended to replace a true testing framework. For that, use rspec and Beaker with Vagrant.
 
 ## Usage
 
