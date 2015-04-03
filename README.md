@@ -4,4 +4,6 @@ Snaphost is a bare bones tool used to support Puppet development. It's purpose i
 
 ## Usage
 
-`snaphost revert` or `snaphost check`
+`snaphost revert` 
+
+## b2
